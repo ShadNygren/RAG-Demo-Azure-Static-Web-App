@@ -101,8 +101,8 @@ def process_file(file_content):
     logging.info('Processing file...')
 
     # Load the document
-    loader = TextLoader(file_content)
-    documents = loader.load()
+    #loader = TextLoader(file_content)
+    #documents = loader.load()
 
     # Split the document into chunks
     #text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
