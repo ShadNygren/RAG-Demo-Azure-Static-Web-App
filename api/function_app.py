@@ -101,7 +101,7 @@ def process_file(file_content):
     logging.info('Processing file...')
 
     # Load the document
-    #loader = TextLoader(file_content)
+    loader = TextLoader(file_content)
     #documents = loader.load()
 
     # Split the document into chunks
