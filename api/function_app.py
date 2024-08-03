@@ -105,8 +105,8 @@ def process_file(file_content):
     documents = loader.load()
 
     # Split the document into chunks
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    docs = text_splitter.split_documents(documents)
+    #text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    #docs = text_splitter.split_documents(documents)
 
     # Initialize OpenAI embeddings
     #embeddings = OpenAIEmbeddings()
