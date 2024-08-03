@@ -71,7 +71,7 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
             file_content = uploaded_file.read()
             
             # Stub for additional file processing
-            process_file(file_content)
+            #process_file(file_content)
 
             logging.info('File uploaded successfully.')
             return func.HttpResponse("File uploaded successfully.", status_code=200)
