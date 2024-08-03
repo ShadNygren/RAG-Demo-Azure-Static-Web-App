@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Form</title>
+</head>
+<body>
+    <h1>Ask a Question</h1>
+    <form id="questionForm">
+        <label for="question">Your Question:</label><br>
+        <textarea id="question" name="question" rows="4" cols="50"></textarea><br><br>
+        <button type="button" onclick="submitQuestion()">Submit</button>
+    </form>
+    <h2>Answer:</h2>
+    <textarea id="answer" name="answer" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        async function submitQuestion() {
+            const question = document.getElementById('question').value;
+            const response = await fetch('YOUR_API_ENDPOINT', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ question })
+            });
+
+            const data = await response.json();
+            document.getElementById('answer').value = data.answer;
+        }
+    </script>
+</body>
+</html>
