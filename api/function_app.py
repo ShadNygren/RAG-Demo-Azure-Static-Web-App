@@ -115,10 +115,10 @@ def process_file(file_content):
         docs = text_splitter.split_text(file_content)
 
         # Initialize OpenAI embeddings
-        #embeddings = OpenAIEmbeddings()
+        embeddings = OpenAIEmbeddings()
 
         # Compute embeddings for each chunk
-        #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
+        embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
 
         # Initialize Cosmos DB client
         #client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
