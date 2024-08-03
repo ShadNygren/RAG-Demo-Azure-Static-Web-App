@@ -47,13 +47,15 @@
                 body: formData,
             });
 
+            const responseText = await response.text();  // Read the response text
+
             if (response.ok) {
                 uploadStatus.textContent = 'File uploaded successfully.';
             } else {
-                uploadStatus.textContent = 'File upload failed: Respose.txt = ' + response.text + '  Response.body = ' + response.body;
+                uploadStatus.textContent = 'File upload failed: ${responseText}';
             }
         } catch (error) {
-            uploadStatus.textContent = 'Error: ' + error.message;
+            uploadStatus.textContent = 'Error: ${error.message}';
         }
     });
     </script>

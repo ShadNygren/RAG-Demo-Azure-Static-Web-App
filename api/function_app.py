@@ -75,7 +75,7 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
             return func.HttpResponse("No file uploaded.", status_code=400)
     except Exception as e:
         logging.error(f"Error during file upload: {str(e)}")
-        return func.HttpResponse("File upload failed: {str(e)}", status_code=500)
+        return func.HttpResponse(f"File upload failed: {str(e)}", status_code=500)
 
 #def process_file(file_content):
 #    # Stub for additional functionality to process the uploaded file
