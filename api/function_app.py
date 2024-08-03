@@ -102,6 +102,10 @@ def process_file(file_content):
 
     #try:
     if True:
+        # Convert bytes to string if necessary
+        if isinstance(file_content, bytes):
+            file_content = file_content.decode('utf-8')
+
         # Ensure the file_content is in the correct format (string or file path)
         if isinstance(file_content, str):
             loader = TextLoader.from_text(file_content)
