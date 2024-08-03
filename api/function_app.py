@@ -106,7 +106,7 @@ def process_file(file_content):
         if isinstance(file_content, str):
             loader = TextLoader.from_text(file_content)
         else:
-            raise ValueError("file_content must be a string containing the document content.")
+            raise ValueError("file_content must be a string containing the document content. The type of file_content is " + type(file_content))
 
         # Load the document
         documents = loader.load()
