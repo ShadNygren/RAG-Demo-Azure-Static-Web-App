@@ -100,32 +100,40 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 def process_file(file_content):
     logging.info('Processing file...')
 
-    # Load the document
-    loader = TextLoader(file_content)
-    documents = loader.load()
+    try:
+        # Ensure the file_content is in the correct format (string or file path)
+        if isinstance(file_content, str):
+            loader = TextLoader.from_text(file_content)
+        else:
+            raise ValueError("file_content must be a string containing the document content.")
 
-    # Split the document into chunks
-    #text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-    #docs = text_splitter.split_documents(documents)
+        # Load the document
+        documents = loader.load()
 
-    # Initialize OpenAI embeddings
-    #embeddings = OpenAIEmbeddings()
+        # Split the document into chunks
+        #text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        #docs = text_splitter.split_documents(documents)
 
-    # Compute embeddings for each chunk
-    #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
+        # Initialize OpenAI embeddings
+        #embeddings = OpenAIEmbeddings()
 
-    # Initialize Cosmos DB client
-    #client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
-    #database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
-    #container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+        # Compute embeddings for each chunk
+        #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
 
-    # Store chunks and their embeddings in Cosmos DB
-    #for doc, embedding in zip(docs, embeddings_list):
-    #    container.upsert_item({
-    #        'id': doc.metadata['id'],
-    #        'content': doc.page_content,
-    #        'embedding': embedding
-    #    })
+        # Initialize Cosmos DB client
+        #client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
+        #database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
+        #container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
 
-    #logging.info('File processed and data stored in Cosmos DB.')
+        # Store chunks and their embeddings in Cosmos DB
+        #for doc, embedding in zip(docs, embeddings_list):
+        #    container.upsert_item({
+        #        'id': doc.metadata['id'],
+        #        'content': doc.page_content,
+        #        'embedding': embedding
+        #    })
 
+        logging.info('File processed and data stored in Cosmos DB.')
+        
+    except Exception as e:
+        logging.error(f"Error processing file: {e}")
