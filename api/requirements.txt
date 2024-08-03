@@ -3,3 +3,9 @@
 # Manually managing azure-functions-worker may cause unexpected issues
 
 azure-functions
+
+# This is for the CosmosDB MongoDB and LangChain
+azure-cosmos
+langchain-openai
+langchain-community
+transformers
