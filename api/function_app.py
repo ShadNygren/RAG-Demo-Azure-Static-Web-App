@@ -100,6 +100,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 def process_file(file_content):
     logging.info('Processing file...')
 
+    # Read the OpenAI API key from environment variable
+    openai_api_key = os.getenv('OPENAI_API_KEY')
+    if not openai_api_key:
+        raise ValueError("OPENAI_API_KEY environment variable not found")
 
     #try:
     if True:
