@@ -100,7 +100,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 def process_file(file_content):
     logging.info('Processing file...')
 
-    try:
+    #try:
+    if True:
         # Ensure the file_content is in the correct format (string or file path)
         if isinstance(file_content, str):
             loader = TextLoader.from_text(file_content)
@@ -135,5 +136,5 @@ def process_file(file_content):
 
         logging.info('File processed and data stored in Cosmos DB.')
         
-    except Exception as e:
-        logging.error(f"Error processing file: {e}")
+    #except Exception as e:
+    #    logging.error(f"Error processing file: {e}")
