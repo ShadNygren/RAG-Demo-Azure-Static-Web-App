@@ -77,7 +77,51 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f"Error during file upload: {str(e)}")
         return func.HttpResponse("File upload failed.", status_code=500)
 
+#def process_file(file_content):
+#    # Stub for additional functionality to process the uploaded file
+#    logging.info('Processing file...')
+#    # Add your file processing logic here
+
+
+import os
+import logging
+from azure.cosmos import CosmosClient, PartitionKey
+from transformers import pipeline
+from langchain_community.document_loaders import TextLoader
+from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
+from langchain_openai import OpenAIEmbeddings
+#from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 def process_file(file_content):
-    # Stub for additional functionality to process the uploaded file
     logging.info('Processing file...')
-    # Add your file processing logic here
+
+    # Load the document
+    loader = TextLoader(file_content)
+    documents = loader.load()
+
+    # Split the document into chunks
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    docs = text_splitter.split_documents(documents)
+
+    # Initialize OpenAI embeddings
+    embeddings = OpenAIEmbeddings()
+
+    # Compute embeddings for each chunk
+    embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
+
+    # Initialize Cosmos DB client
+    client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
+    database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
+    container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+
+    # Store chunks and their embeddings in Cosmos DB
+    for doc, embedding in zip(docs, embeddings_list):
+        container.upsert_item({
+            'id': doc.metadata['id'],
+            'content': doc.page_content,
+            'embedding': embedding
+        })
+
+    logging.info('File processed and data stored in Cosmos DB.')
+
