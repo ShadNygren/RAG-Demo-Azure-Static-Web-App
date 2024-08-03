@@ -102,7 +102,7 @@ def process_file(file_content):
 
     # Load the document
     loader = TextLoader(file_content)
-    #documents = loader.load()
+    documents = loader.load()
 
     # Split the document into chunks
     #text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
