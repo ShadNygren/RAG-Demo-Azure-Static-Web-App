@@ -52,10 +52,10 @@
             if (response.ok) {
                 uploadStatus.textContent = 'File uploaded successfully.';
             } else {
-                uploadStatus.textContent = 'File upload failed: ${responseText}';
+                uploadStatus.textContent = `File upload failed: ${responseText}`;
             }
         } catch (error) {
-            uploadStatus.textContent = 'Error: ${error.message}';
+            uploadStatus.textContent = `Error: ${error.message}`;
         }
     });
     </script>
