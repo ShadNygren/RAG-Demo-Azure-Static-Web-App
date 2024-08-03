@@ -61,7 +61,11 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
     try:
         # Get the uploaded file
         uploaded_file = req.files.get('file')
-
+    except Exception as e:
+        logging.error(f"Error during req.files.get: {str(e)}")
+        return func.HttpResponse(f"Error during req.files.get: {str(e)}", status_code=500)
+    
+    try:
         if uploaded_file:
             # Process the file as needed
             file_content = uploaded_file.read()
