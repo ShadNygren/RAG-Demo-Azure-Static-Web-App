@@ -106,18 +106,13 @@ def process_file(file_content):
         if isinstance(file_content, bytes):
             file_content = file_content.decode('utf-8')
 
-        # Ensure the file_content is in the correct format (string or file path)
-        if isinstance(file_content, str):
-            loader = TextLoader.from_text(file_content)
-        else:
+        # Ensure the file_content is in the correct format (string)
+        if not isinstance(file_content, str):
             raise ValueError("file_content must be a string containing the document content. The type of file_content is " + str(type(file_content)))
-
-        # Load the document
-        documents = loader.load()
 
         # Split the document into chunks
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-        docs = text_splitter.split_documents(documents)
+        docs = text_splitter.split_text(file_content)
 
         # Initialize OpenAI embeddings
         #embeddings = OpenAIEmbeddings()
