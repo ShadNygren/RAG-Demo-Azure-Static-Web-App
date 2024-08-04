@@ -120,8 +120,8 @@ def process_file(file_content):
             raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
 
         # Initialize Cosmos DB client
-        #credential = DefaultAzureCredential()
-        #client = CosmosClient(cosmos_db_connection_string, credential)
+        credential = DefaultAzureCredential()
+        client = CosmosClient(cosmos_db_connection_string, credential)
         #database = client.get_database_client(cosmos_db_database_name)
         #container = database.get_container_client(cosmos_db_container_name
 
