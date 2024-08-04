@@ -332,6 +332,9 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
         if user_question:
             results = query_mongodb(user_question)
             logging.info('Query executed successfully.')
+            results = {
+                "answer": "This is a hard-coded response for testing purposes."
+            }
             return func.HttpResponse(json.dumps(results, default=str), mimetype="application/json", status_code=200)
         else:
             return func.HttpResponse("Please provide a question to query.", status_code=400)
