@@ -52,7 +52,7 @@
     <script>
         async function submitQuestion() {
             const question = document.getElementById('visitor_question').value;
-            const response = await fetch('YOUR_API_ENDPOINT', {
+            const response = await fetch('/api/query_db', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
