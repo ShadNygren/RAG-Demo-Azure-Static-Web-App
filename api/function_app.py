@@ -274,7 +274,7 @@ def cosine_similarity_manual(vec1, vec2):
     norm_b = math.sqrt(sum(b * b for b in vec2))
     return dot_product / (norm_a * norm_b)
 
-def query_mongodb_tmpold(user_question, top_k=5):
+def query_mongodb(user_question, top_k=5):
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -305,7 +305,7 @@ def query_mongodb_tmpold(user_question, top_k=5):
     return top_documents
 
 
-def query_mongodb(user_question, top_k=5):
+def query_mongodb_hardcoded(user_question, top_k=5):
     # Hard-coded response for testing purposes
     top_documents = [
         {
@@ -333,7 +333,7 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             results = query_mongodb(user_question)
             logging.info('Query executed successfully.')
             rag_answer = {
-                "answer": "This is a hard-coded response for testing purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results))
+                "answer": "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results))
             }
             return func.HttpResponse(json.dumps(rag_answer, default=str), mimetype="application/json", status_code=200)
         else:
