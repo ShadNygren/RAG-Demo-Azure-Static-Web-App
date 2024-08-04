@@ -96,7 +96,7 @@ def process_file(file_content):
 
         embeddings_list = []
         for doc in docs:
-            embedding = get_embedding(doc.page_content)
+            embedding = get_embedding(doc)
             embeddings_list.append(embedding)
 
 
