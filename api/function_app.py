@@ -1,8 +1,23 @@
-import azure.functions as func
+import os
 import logging
 import json
 
+from openai import OpenAI
+
+from transformers import pipeline
+from langchain_community.document_loaders import TextLoader
+from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
+from langchain_openai import OpenAIEmbeddings
+#from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+import azure.functions as func
+from azure.identity import DefaultAzureCredential
+from azure.cosmos import CosmosClient, PartitionKey
+
+
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
+
 
 @app.route(route="message")
 def message(req: func.HttpRequest) -> func.HttpResponse:
@@ -14,6 +29,7 @@ def message(req: func.HttpRequest) -> func.HttpResponse:
         json.dumps(response),
         mimetype="application/json"
     )
+
 
 @app.route(route="upload_file", auth_level=func.AuthLevel.ANONYMOUS)
 def upload_file(req: func.HttpRequest) -> func.HttpResponse:
@@ -43,25 +59,11 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"File upload failed: {str(e)}", status_code=500)
 
 
-from openai import OpenAI
-
 openai_client = OpenAI()
 
 def get_embedding(text, model="text-embedding-ada-002"):
    #text = text.replace("\n", " ")
    return openai_client.embeddings.create(input = [text], model=model).data[0].embedding
-
-
-import os
-import logging
-from azure.cosmos import CosmosClient, PartitionKey
-from transformers import pipeline
-from langchain_community.document_loaders import TextLoader
-from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVectorSearch
-from langchain_openai import OpenAIEmbeddings
-#from langchain.text_splitter import CharacterTextSplitter
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
 
 
 def process_file(file_content):
@@ -103,9 +105,11 @@ def process_file(file_content):
         # ----- CosmosDB -----
 
         # Initialize Cosmos DB client
-        client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
-        #database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
-        #container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+        credential = DefaultAzureCredential()
+        client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"), credential)
+        database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
+        container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+
 
         # Store chunks and their embeddings in Cosmos DB
         #for doc, embedding in zip(docs, embeddings_list):
