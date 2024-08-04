@@ -183,23 +183,35 @@ def clear_mongodb():
 #    return top_documents
 
 
+#@app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
+#def clear_db(req: func.HttpRequest) -> func.HttpResponse:
+#    logging.info('Python HTTP trigger function processed a request.')
+#
+#    name = req.params.get('name')
+#    if not name:
+#        try:
+#            req_body = req.get_json()
+#        except ValueError:
+#            pass
+#        else:
+#            name = req_body.get('name')
+#
+#    if name:
+#        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+#    else:
+#        return func.HttpResponse(
+#             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+#             status_code=200
+#        )
+
 @app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
-def clear_db(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function to clear database.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+    try:
+        clear_mongodb()
+        logging.info('Database cleared successfully.')
+        return func.HttpResponse("Database cleared successfully.", status_code=200)
+    except Exception as e:
+        logging.error(f"Error clearing database: {str(e)}")
+        return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
