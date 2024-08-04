@@ -220,7 +220,7 @@ def process_file(file_content):
 #        logging.error(f"Error clearing database: {str(e)}")
 #        return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
 
-def clear_db(batch_size=100):
+def clear_db_old(batch_size=10):
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -244,6 +244,50 @@ def clear_db(batch_size=100):
 
         if result.deleted_count == 0:
             break
+
+
+import time
+import logging
+from pymongo import MongoClient
+
+def clear_db(batch_size=10, max_retries=3, delay=5):
+    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+    client = MongoClient(cosmos_db_connection_string)
+    database = client[cosmos_db_database_name]
+    collection = database[cosmos_db_container_name]
+
+    retries = 0
+
+    while True:
+        try:
+            # Find documents to delete in batches
+            documents = collection.find().limit(batch_size)
+            documents_list = list(documents)
+
+            if not documents_list:
+                break
+
+            ids_to_delete = [doc['_id'] for doc in documents_list]
+            result = collection.delete_many({'_id': {'$in': ids_to_delete}})
+            logging.info(f"Deleted {result.deleted_count} documents from the database.")
+
+            if result.deleted_count == 0:
+                break
+
+            retries = 0  # Reset retries after a successful batch
+
+        except Exception as e:
+            logging.error(f"Error deleting documents: {e}")
+            retries += 1
+            if retries > max_retries:
+                logging.error(f"Exceeded maximum retries ({max_retries}).")
+                break
+            logging.info(f"Retrying in {delay} seconds... (Retry {retries}/{max_retries})")
+            time.sleep(delay)
+
 
 # Route for clearing the database
 @app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
