@@ -61,7 +61,7 @@
             });
 
             const data = await response.json();
-            document.getElementById('answer').value = data.answer;
+            document.getElementById('answer').value = 'RAG result = ' + data.answer;
         }
     </script>
 </body>
