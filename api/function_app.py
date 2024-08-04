@@ -302,10 +302,11 @@ def query_mongodb(user_question, top_k=5):
     # Get top_k most similar documents
     top_documents = [doc for doc, sim in similarities[:top_k]]
 
-    return top_documents
+    #return top_documents
+    return ["At query_mongodb the user_question = " + user_question]
 
-@app.route(route="query_db_old", auth_level=func.AuthLevel.ANONYMOUS)
-def query_db_route_old(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
+def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function to query database.')
 
     try:
@@ -324,9 +325,10 @@ def query_db_route_old(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f"Error querying database: {str(e)}")
         return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
+# ---------------------------------
 
-@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
-def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="query_db_hardcodedresponse", auth_level=func.AuthLevel.ANONYMOUS)
+def query_db_route_hardcodedresponse(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function to query database.')
 
     try:
