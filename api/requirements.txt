@@ -12,3 +12,6 @@ pymongo
 langchain-openai
 langchain-community
 transformers
+
+numpy
+sklearn

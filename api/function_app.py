@@ -198,8 +198,8 @@ def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
 # =================================
 
 
-#import numpy as np
-#from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 #def query_mongodb(user_question, top_k=5):
 #    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
@@ -232,6 +232,26 @@ def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
 #
 #    return top_documents
 
+
+#@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
+#def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
+#    logging.info('Python HTTP trigger function to query database.')
+#
+#    try:
+#        user_question = req.params.get('question')
+#        if not user_question:
+#            req_body = req.get_json()
+#            user_question = req_body.get('question')
+#
+#        if user_question:
+#            results = query_db(user_question)
+#            logging.info('Query executed successfully.')
+#            return func.HttpResponse(json.dumps(results, default=str), mimetype="application/json", status_code=200)
+#        else:
+#            return func.HttpResponse("Please provide a question to query.", status_code=400)
+#    except Exception as e:
+#        logging.error(f"Error querying database: {str(e)}")
+#        return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
 
 
