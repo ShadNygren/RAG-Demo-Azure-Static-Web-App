@@ -133,7 +133,7 @@ def process_file(file_content):
             md5_hash = hashlib.md5(input_bytes).hexdigest()
             embedding = get_embedding(doc)
             collection.update_one(
-                {'_id': md5_hash},
+                {'id': md5_hash}, # This is used as the shard key
                 {'$set': {
                     'content': doc,
                     'embedding': embedding
