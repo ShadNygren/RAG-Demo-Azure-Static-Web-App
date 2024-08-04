@@ -304,8 +304,8 @@ def query_mongodb(user_question, top_k=5):
 
     return top_documents
 
-@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
-def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
+@app.route(route="query_db_old", auth_level=func.AuthLevel.ANONYMOUS)
+def query_db_route_old(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function to query database.')
 
     try:
@@ -325,5 +325,27 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
 
+@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
+def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function to query database.')
+
+    try:
+        user_question = req.params.get('question')
+        if not user_question:
+            req_body = req.get_json()
+            user_question = req_body.get('question')
+
+        if user_question:
+            # For testing purposes, return a hard-coded response
+            hard_coded_response = {
+                "answer": "This is a hard-coded response for testing purposes."
+            }
+            logging.info('Query executed successfully with hard-coded response.')
+            return func.HttpResponse(json.dumps(hard_coded_response), mimetype="application/json", status_code=200)
+        else:
+            return func.HttpResponse("Please provide a question to query.", status_code=400)
+    except Exception as e:
+        logging.error(f"Error querying database: {str(e)}")
+        return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
 
