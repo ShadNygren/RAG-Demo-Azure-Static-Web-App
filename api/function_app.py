@@ -103,9 +103,9 @@ def process_file(file_content):
         # ----- CosmosDB -----
 
         # Initialize Cosmos DB client
-        #client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
-        #database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
-        #container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+        client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
+        database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
+        container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
 
         # Store chunks and their embeddings in Cosmos DB
         #for doc, embedding in zip(docs, embeddings_list):
