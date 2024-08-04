@@ -12,8 +12,11 @@ from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 import azure.functions as func
+# I probably don't need these next two imports because I am using MongoDB client for CosmosDB
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient, PartitionKey
+
+from pymongo import MongoClient
 
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
@@ -120,11 +123,15 @@ def process_file(file_content):
             raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
 
         # Initialize Cosmos DB client
-        credential = DefaultAzureCredential()
-        client = CosmosClient(cosmos_db_connection_string, credential)
+        #credential = DefaultAzureCredential()
+        #client = CosmosClient(cosmos_db_connection_string, credential)
         #database = client.get_database_client(cosmos_db_database_name)
         #container = database.get_container_client(cosmos_db_container_name
 
+        # Initialize MongoDB client
+        client = MongoClient(cosmos_db_connection_string)
+        database = client[cosmos_db_database_name]
+        collection = database[cosmos_db_container_name]
 
         # Store chunks and their embeddings in Cosmos DB
         #for doc, embedding in zip(docs, embeddings_list):

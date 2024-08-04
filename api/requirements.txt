@@ -7,6 +7,8 @@ azure-functions
 # This is for the CosmosDB MongoDB and LangChain
 azure-identity
 azure-cosmos
+pymongo
+
 langchain-openai
 langchain-community
 transformers
