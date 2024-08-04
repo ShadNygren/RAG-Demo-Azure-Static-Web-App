@@ -7,10 +7,10 @@
 </head>
 <body>
     <h1>Ask a Question</h1>
-    <p>Say Hello from API: <b id="name">...</b></p>
+    <p>Test Hello from API: <b id="name">...</b></p>
     <form id="questionForm">
         <fieldset>
-            <legend>Query Options</legend>
+            <legend>Query Knowledge Source Options</legend>
             <label>
                 <input type="radio" name="RAG_Only_Query_Option" value="RAG_Only_Query_Option" checked>
                 Answer question using only data in RAG (default)
@@ -19,6 +19,18 @@
             <label>
                 <input type="radio" name="Full_Query_Option" value="RAG_Only_Query_Option">
                 Answer question using full knowledge in LLM plus RAG
+            </label>
+        </fieldset>
+        <fieldset>
+            <legend>Query Filter Options</legend>
+            <label>
+                <input type="radio" name="Filter_Objectionable_Content_Option" value="Filter_Objectionable_Content_Option" checked>
+                Filter visitor questions for objectionable content (default)
+            </label>
+            <br>
+            <label>
+                <input type="radio" name="No_Filter_Option" value="No_Filter_Option">
+                Do not filter visitor questions for objectionable content
             </label>
         </fieldset>
         <label for="question">Your Question:</label><br>
