@@ -29,7 +29,9 @@
         const { text } = await (await fetch(`/api/message`)).json();
         document.querySelector('#name').textContent = text;
     }());
+    </script>
 
+    <script>
     document.querySelector('#uploadButton').addEventListener('click', async () => {
         const fileInput = document.querySelector('#fileInput');
         const uploadStatus = document.querySelector('#uploadStatus');
@@ -60,17 +62,19 @@
             uploadStatus.textContent = `Error: ${error.message}`;
         }
     });
+    </script>
 
+    <script>
     document.querySelector('#clearDbButton').addEventListener('click', async () => {
         const clearDbStatus = document.querySelector('#clearDbStatus');
-
+    
         try {
             const response = await fetch('/api/clear_db', {
                 method: 'POST',  // You may want to use DELETE method if you prefer that semantic
             });
-
+    
             const responseText = await response.text();  // Read the response text
-
+    
             if (response.ok) {
                 clearDbStatus.textContent = 'Database cleared successfully.';
             } else {
@@ -81,6 +85,7 @@
         }
     });
     </script>
+    
 </body>
 
 </html>
