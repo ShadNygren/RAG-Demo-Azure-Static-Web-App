@@ -134,18 +134,6 @@ def process_file(file_content):
     #    logging.error(f"Error processing file: {e}")
 
 
-def clear_mongodb():
-    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
-    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
-    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
-
-    client = MongoClient(cosmos_db_connection_string)
-    database = client[cosmos_db_database_name]
-    collection = database[cosmos_db_container_name]
-
-    # Delete all documents in the collection
-    result = collection.delete_many({})
-    logging.info(f"Deleted {result.deleted_count} documents from the database.")
 
 
 #import numpy as np
@@ -204,14 +192,75 @@ def clear_mongodb():
 #             status_code=200
 #        )
 
+# =================================
+
+#def clear_mongodb():
+#    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+#    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+#    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+#
+#    client = MongoClient(cosmos_db_connection_string)
+#    database = client[cosmos_db_database_name]
+#    collection = database[cosmos_db_container_name]
+#
+#    # Delete all documents in the collection
+#    result = collection.delete_many({})
+#    logging.info(f"Deleted {result.deleted_count} documents from the database.")
+
+
+#@app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
+#def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
+#    logging.info('Python HTTP trigger function to clear database.')
+#
+#    try:
+#        clear_mongodb()
+#        logging.info('Database cleared successfully.')
+#        return func.HttpResponse("Database cleared successfully.", status_code=200)
+#    except Exception as e:
+#        logging.error(f"Error clearing database: {str(e)}")
+#        return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
+
+def clear_db(batch_size=100):
+    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+    client = MongoClient(cosmos_db_connection_string)
+    database = client[cosmos_db_database_name]
+    collection = database[cosmos_db_container_name]
+
+    # Delete documents in batches
+    while True:
+        # Find documents to delete in batches
+        documents = collection.find().limit(batch_size)
+        documents_list = list(documents)
+
+        if not documents_list:
+            break
+
+        ids_to_delete = [doc['_id'] for doc in documents_list]
+        result = collection.delete_many({'_id': {'$in': ids_to_delete}})
+        logging.info(f"Deleted {result.deleted_count} documents from the database.")
+
+        if result.deleted_count == 0:
+            break
+
+# Route for clearing the database
 @app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
 def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function to clear database.')
 
     try:
-        clear_mongodb()
+        clear_db()
         logging.info('Database cleared successfully.')
         return func.HttpResponse("Database cleared successfully.", status_code=200)
     except Exception as e:
         logging.error(f"Error clearing database: {str(e)}")
         return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
+
+
+
+
+
+
+
