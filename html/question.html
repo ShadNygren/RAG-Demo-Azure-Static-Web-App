@@ -33,12 +33,14 @@
                 Do not filter visitor questions for objectionable content
             </label>
         </fieldset>
-        <label for="question">Your Question:</label><br>
-        <textarea id="question" name="question" rows="4" cols="50"></textarea><br><br>
+        <label for="visitor_question">Visitor Question:</label><br>
+        <textarea id="visitor_question" name="visitor_question" rows="4" cols="80"></textarea><br><br>
         <button type="button" onclick="submitQuestion()">Submit</button>
     </form>
-    <h2>Answer:</h2>
-    <textarea id="answer" name="answer" rows="4" cols="50" readonly></textarea>
+    <h2>Modified Question Sent to LLM RAG</h2>
+    <textarea id="modified_question" name="modified_question" rows="4" cols="80" readonly></textarea>
+    <h2>Answer From LLM RAG:</h2>
+    <textarea id="answer" name="answer" rows="4" cols="80" readonly></textarea>
 
     <script>
         (async function() {
@@ -49,7 +51,7 @@
 
     <script>
         async function submitQuestion() {
-            const question = document.getElementById('question').value;
+            const question = document.getElementById('visitor_question').value;
             const response = await fetch('YOUR_API_ENDPOINT', {
                 method: 'POST',
                 headers: {
