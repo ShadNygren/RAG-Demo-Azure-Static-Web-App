@@ -104,11 +104,26 @@ def process_file(file_content):
 
         # ----- CosmosDB -----
 
+        cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+        cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+        cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+        logging.info(f"COSMOS_DB_CONNECTION_STRING: {cosmos_db_connection_string}")
+        logging.info(f"COSMOS_DB_DATABASE_NAME: {cosmos_db_database_name}")
+        logging.info(f"COSMOS_DB_COLLECTION_NAME: {cosmos_db_container_name}")
+
+        if not cosmos_db_connection_string:
+            raise ValueError("COSMOS_DB_CONNECTION_STRING environment variable not found or is empty")
+        if not cosmos_db_database_name:
+            raise ValueError("COSMOS_DB_DATABASE_NAME environment variable not found or is empty")
+        if not cosmos_db_container_name:
+            raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
+
         # Initialize Cosmos DB client
         credential = DefaultAzureCredential()
-        client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"), credential)
-        database = client.get_database_client(os.getenv("COSMOS_DB_DATABASE_NAME"))
-        container = database.get_container_client(os.getenv("COSMOS_DB_COLLECTION_NAME"))
+        client = CosmosClient(cosmos_db_connection_string, credential)
+        database = client.get_database_client(cosmos_db_database_name)
+        container = database.get_container_client(cosmos_db_container_name
 
 
         # Store chunks and their embeddings in Cosmos DB
