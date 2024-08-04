@@ -135,115 +135,7 @@ def process_file(file_content):
 
 
 
-
-#import numpy as np
-#from sklearn.metrics.pairwise import cosine_similarity
-
-#def query_mongodb(user_question, top_k=5):
-#    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
-#    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
-#    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
-#
-#    client = MongoClient(cosmos_db_connection_string)
-#    database = client[cosmos_db_database_name]
-#    collection = database[cosmos_db_container_name]
-#
-#    # Get embedding for user question
-#    question_embedding = get_embedding(user_question)
-#
-#    # Fetch all documents and their embeddings from the database
-#    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
-#
-#    # Calculate cosine similarity between user question embedding and document embeddings
-#    similarities = []
-#    for doc in documents:
-#        doc_embedding = np.array(doc['embedding']).reshape(1, -1)
-#        question_embedding_np = np.array(question_embedding).reshape(1, -1)
-#        similarity = cosine_similarity(doc_embedding, question_embedding_np)[0][0]
-#        similarities.append((doc, similarity))
-#
-#    # Sort documents by similarity score in descending order
-#    similarities.sort(key=lambda x: x[1], reverse=True)
-#
-#    # Get top_k most similar documents
-#    top_documents = [doc for doc, sim in similarities[:top_k]]
-#
-#    return top_documents
-
-
-#@app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
-#def clear_db(req: func.HttpRequest) -> func.HttpResponse:
-#    logging.info('Python HTTP trigger function processed a request.')
-#
-#    name = req.params.get('name')
-#    if not name:
-#        try:
-#            req_body = req.get_json()
-#        except ValueError:
-#            pass
-#        else:
-#            name = req_body.get('name')
-#
-#    if name:
-#        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-#    else:
-#        return func.HttpResponse(
-#             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-#             status_code=200
-#        )
-
 # =================================
-
-#def clear_mongodb():
-#    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
-#    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
-#    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
-#
-#    client = MongoClient(cosmos_db_connection_string)
-#    database = client[cosmos_db_database_name]
-#    collection = database[cosmos_db_container_name]
-#
-#    # Delete all documents in the collection
-#    result = collection.delete_many({})
-#    logging.info(f"Deleted {result.deleted_count} documents from the database.")
-
-
-#@app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
-#def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
-#    logging.info('Python HTTP trigger function to clear database.')
-#
-#    try:
-#        clear_mongodb()
-#        logging.info('Database cleared successfully.')
-#        return func.HttpResponse("Database cleared successfully.", status_code=200)
-#    except Exception as e:
-#        logging.error(f"Error clearing database: {str(e)}")
-#        return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
-
-def clear_db_old(batch_size=10):
-    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
-    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
-    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
-
-    client = MongoClient(cosmos_db_connection_string)
-    database = client[cosmos_db_database_name]
-    collection = database[cosmos_db_container_name]
-
-    # Delete documents in batches
-    while True:
-        # Find documents to delete in batches
-        documents = collection.find().limit(batch_size)
-        documents_list = list(documents)
-
-        if not documents_list:
-            break
-
-        ids_to_delete = [doc['_id'] for doc in documents_list]
-        result = collection.delete_many({'_id': {'$in': ids_to_delete}})
-        logging.info(f"Deleted {result.deleted_count} documents from the database.")
-
-        if result.deleted_count == 0:
-            break
 
 
 import time
@@ -303,6 +195,42 @@ def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"Error clearing database: {str(e)}", status_code=500)
 
 
+# =================================
+
+
+#import numpy as np
+#from sklearn.metrics.pairwise import cosine_similarity
+
+#def query_mongodb(user_question, top_k=5):
+#    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+#    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+#    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+#
+#    client = MongoClient(cosmos_db_connection_string)
+#    database = client[cosmos_db_database_name]
+#    collection = database[cosmos_db_container_name]
+#
+#    # Get embedding for user question
+#    question_embedding = get_embedding(user_question)
+#
+#    # Fetch all documents and their embeddings from the database
+#    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
+#
+#    # Calculate cosine similarity between user question embedding and document embeddings
+#    similarities = []
+#    for doc in documents:
+#        doc_embedding = np.array(doc['embedding']).reshape(1, -1)
+#        question_embedding_np = np.array(question_embedding).reshape(1, -1)
+#        similarity = cosine_similarity(doc_embedding, question_embedding_np)[0][0]
+#        similarities.append((doc, similarity))
+#
+#    # Sort documents by similarity score in descending order
+#    similarities.sort(key=lambda x: x[1], reverse=True)
+#
+#    # Get top_k most similar documents
+#    top_documents = [doc for doc, sim in similarities[:top_k]]
+#
+#    return top_documents
 
 
 
