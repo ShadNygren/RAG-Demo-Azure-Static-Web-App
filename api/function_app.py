@@ -275,35 +275,37 @@ def cosine_similarity_manual(vec1, vec2):
     return dot_product / (norm_a * norm_b)
 
 def query_mongodb(user_question, top_k=5):
-    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
-    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
-    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
-
-    client = MongoClient(cosmos_db_connection_string)
-    database = client[cosmos_db_database_name]
-    collection = database[cosmos_db_container_name]
-
-    # Get embedding for user question
-    question_embedding = get_embedding(user_question)
-
-    # Fetch all documents and their embeddings from the database
-    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
-
-    # Calculate cosine similarity between user question embedding and document embeddings
-    similarities = []
-    for doc in documents:
-        doc_embedding = doc['embedding']
-        similarity = cosine_similarity_manual(question_embedding, doc_embedding)
-        similarities.append((doc, similarity))
-
-    # Sort documents by similarity score in descending order
-    similarities.sort(key=lambda x: x[1], reverse=True)
-
-    # Get top_k most similar documents
-    top_documents = [doc for doc, sim in similarities[:top_k]]
-
-    #return top_documents
     return ["At query_mongodb the user_question = " + user_question]
+
+#    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+#    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+#    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+#
+#    client = MongoClient(cosmos_db_connection_string)
+#    database = client[cosmos_db_database_name]
+#    collection = database[cosmos_db_container_name]
+#
+#    # Get embedding for user question
+#    question_embedding = get_embedding(user_question)
+#
+#    # Fetch all documents and their embeddings from the database
+#    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
+#
+#    # Calculate cosine similarity between user question embedding and document embeddings
+#    similarities = []
+#    for doc in documents:
+#        doc_embedding = doc['embedding']
+#        similarity = cosine_similarity_manual(question_embedding, doc_embedding)
+#        similarities.append((doc, similarity))
+#
+#    # Sort documents by similarity score in descending order
+#    similarities.sort(key=lambda x: x[1], reverse=True)
+#
+#    # Get top_k most similar documents
+#    top_documents = [doc for doc, sim in similarities[:top_k]]
+#
+#    #return top_documents
+#    return ["At query_mongodb the user_question = " + user_question]
 
 @app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
 def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
