@@ -43,6 +43,14 @@ def upload_file(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(f"File upload failed: {str(e)}", status_code=500)
 
 
+from openai import OpenAI
+
+openai_client = OpenAI()
+
+def get_embedding(text, model="text-embedding-ada-002"):
+   #text = text.replace("\n", " ")
+   return openai_client.embeddings.create(input = [text], model=model).data[0].embedding
+
 
 import os
 import logging
@@ -53,6 +61,8 @@ from langchain_community.vectorstores.azure_cosmos_db import AzureCosmosDBVector
 from langchain_openai import OpenAIEmbeddings
 #from langchain.text_splitter import CharacterTextSplitter
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+
 
 def process_file(file_content):
     logging.info('Processing file...')
@@ -76,11 +86,21 @@ def process_file(file_content):
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         docs = text_splitter.split_text(file_content)
 
+        # ----- embeddings -----
+
         # Initialize OpenAI embeddings
-        embeddings = OpenAIEmbeddings()
+        #embeddings = OpenAIEmbeddings()
 
         # Compute embeddings for each chunk
-        embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
+        #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
+
+        embeddings_list = []
+        for doc in docs:
+            embedding = get_embedding(doc.page_content)
+            embeddings_list.append(embedding)
+
+
+        # ----- CosmosDB -----
 
         # Initialize Cosmos DB client
         #client = CosmosClient(os.getenv("COSMOS_DB_CONNECTION_STRING"))
