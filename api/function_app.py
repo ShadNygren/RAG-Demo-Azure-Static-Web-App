@@ -141,6 +141,17 @@ def process_file(file_content):
         #        'embedding': embedding
         #    })
 
+        # Store chunks and their embeddings in Cosmos DB the MongoDB version
+        for doc, embedding in zip(docs, embeddings_list):
+            collection.update_one(
+                {'id': doc.metadata['id']},
+                {'$set': {
+                    'content': doc.page_content,
+                    'embedding': embedding
+                }},
+                upsert=True
+            )
+
         logging.info('File processed and data stored in Cosmos DB.')
         
     #except Exception as e:
