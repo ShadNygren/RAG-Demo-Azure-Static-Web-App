@@ -161,7 +161,7 @@ def process_file(file_content):
             collection.update_one(
                 {'id': hashlib.md5(input_bytes).hexdigest()},
                 {'$set': {
-                    'content': doc.page_content,
+                    'content': doc,
                     'embedding': embedding
                 }},
                 upsert=True
