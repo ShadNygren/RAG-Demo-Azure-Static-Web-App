@@ -108,16 +108,16 @@ def process_file(file_content):
         cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
         cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
 
-        #logging.info(f"COSMOS_DB_CONNECTION_STRING: {cosmos_db_connection_string}")
-        #logging.info(f"COSMOS_DB_DATABASE_NAME: {cosmos_db_database_name}")
-        #logging.info(f"COSMOS_DB_COLLECTION_NAME: {cosmos_db_container_name}")
+        logging.info(f"COSMOS_DB_CONNECTION_STRING: {cosmos_db_connection_string}")
+        logging.info(f"COSMOS_DB_DATABASE_NAME: {cosmos_db_database_name}")
+        logging.info(f"COSMOS_DB_COLLECTION_NAME: {cosmos_db_container_name}")
 
-        #if not cosmos_db_connection_string:
-        #    raise ValueError("COSMOS_DB_CONNECTION_STRING environment variable not found or is empty")
-        #if not cosmos_db_database_name:
-        #    raise ValueError("COSMOS_DB_DATABASE_NAME environment variable not found or is empty")
-        #if not cosmos_db_container_name:
-        #    raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
+        if not cosmos_db_connection_string:
+            raise ValueError("COSMOS_DB_CONNECTION_STRING environment variable not found or is empty")
+        if not cosmos_db_database_name:
+            raise ValueError("COSMOS_DB_DATABASE_NAME environment variable not found or is empty")
+        if not cosmos_db_container_name:
+            raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
 
         # Initialize Cosmos DB client
         #credential = DefaultAzureCredential()
