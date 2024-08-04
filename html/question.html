@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Ask a Question</h1>
+    <p>Say Hello from API: <b id="name">...</b></p>
     <form id="questionForm">
         <label for="question">Your Question:</label><br>
         <textarea id="question" name="question" rows="4" cols="50"></textarea><br><br>
@@ -14,6 +15,13 @@
     </form>
     <h2>Answer:</h2>
     <textarea id="answer" name="answer" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        (async function() {
+            const { text } = await (await fetch(`/api/message`)).json();
+            document.querySelector('#name').textContent = text;
+        }());
+    </script>
 
     <script>
         async function submitQuestion() {
