@@ -261,12 +261,26 @@ def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
 #        logging.error(f"Error querying database: {str(e)}")
 #        return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
-# --------------------------------------
+# =========================================
 
 import math
 import os
 import logging
 from pymongo import MongoClient
+
+def query_mongodb_hardcoded(user_question, top_k=5):
+    # Hard-coded response for testing purposes
+    top_documents = [
+        {
+            "id": "123",
+            "content": "This is a hard-coded response document.",
+            "embedding": [0.1, 0.2, 0.3]  # Example embedding
+        }
+    ]
+
+    return top_documents
+
+# --------------------------
 
 def cosine_similarity_manual(vec1, vec2):
     dot_product = sum(a * b for a, b in zip(vec1, vec2))
@@ -274,7 +288,8 @@ def cosine_similarity_manual(vec1, vec2):
     norm_b = math.sqrt(sum(b * b for b in vec2))
     return dot_product / (norm_a * norm_b)
 
-def query_mongodb(user_question, top_k=5):
+
+def query_mongodb_nominsimilarity(user_question, top_k=5):
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -305,18 +320,61 @@ def query_mongodb(user_question, top_k=5):
     return top_documents
 
 
-def query_mongodb_hardcoded(user_question, top_k=5):
-    # Hard-coded response for testing purposes
-    top_documents = [
-        {
-            "id": "123",
-            "content": "This is a hard-coded response document.",
-            "embedding": [0.1, 0.2, 0.3]  # Example embedding
-        }
-    ]
+def query_mongodb(user_question, top_k=5, minimum_similarity=0.0):
+    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+    client = MongoClient(cosmos_db_connection_string)
+    database = client[cosmos_db_database_name]
+    collection = database[cosmos_db_container_name]
+
+    # Get embedding for user question
+    question_embedding = get_embedding(user_question)
+
+    # Fetch all documents and their embeddings from the database
+    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
+
+    # Calculate cosine similarity between user question embedding and document embeddings
+    similarities = []
+    for doc in documents:
+        doc_embedding = doc['embedding']
+        similarity = cosine_similarity_manual(question_embedding, doc_embedding)
+        if similarity >= minimum_similarity:
+            similarities.append((doc, similarity))
+
+    # Sort documents by similarity score in descending order
+    similarities.sort(key=lambda x: x[1], reverse=True)
+
+    # Get top_k most similar documents
+    top_documents = [doc for doc, sim in similarities[:top_k]]
 
     return top_documents
 
+
+
+@app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
+def query_db_route_nominsimilarity(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function to query database.')
+
+    try:
+        user_question = req.params.get('question')
+        if not user_question:
+            req_body = req.get_json()
+            user_question = req_body.get('question')
+
+        if user_question:
+            results = query_mongodb(user_question)
+            logging.info('Query executed successfully.')
+            rag_answer = {
+                "answer": "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results))
+            }
+            return func.HttpResponse(json.dumps(rag_answer, default=str), mimetype="application/json", status_code=200)
+        else:
+            return func.HttpResponse("Please provide a question to query.", status_code=400)
+    except Exception as e:
+        logging.error(f"Error querying database: {str(e)}")
+        return func.HttpResponse(f"Error querying database: {str(e)}", status_code=500)
 
 
 @app.route(route="query_db", auth_level=func.AuthLevel.ANONYMOUS)
@@ -330,7 +388,7 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             user_question = req_body.get('question')
 
         if user_question:
-            results = query_mongodb(user_question)
+            results = query_mongodb(user_question, top_k=5, minimum_similarity=0.5)
             logging.info('Query executed successfully.')
             rag_answer = {
                 "answer": "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results))
