@@ -134,7 +134,7 @@ def process_file(file_content):
     #    logging.error(f"Error processing file: {e}")
 
 
-def clear_db():
+def clear_mongodb():
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -151,7 +151,7 @@ def clear_db():
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-def query_db(user_question, top_k=5):
+def query_mongodb(user_question, top_k=5):
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -181,3 +181,25 @@ def query_db(user_question, top_k=5):
     top_documents = [doc for doc, sim in similarities[:top_k]]
 
     return top_documents
+
+
+@app.route(route="clear_db", auth_level=func.AuthLevel.ANONYMOUS)
+def clear_db(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+
+    name = req.params.get('name')
+    if not name:
+        try:
+            req_body = req.get_json()
+        except ValueError:
+            pass
+        else:
+            name = req_body.get('name')
+
+    if name:
+        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    else:
+        return func.HttpResponse(
+             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
+             status_code=200
+        )
