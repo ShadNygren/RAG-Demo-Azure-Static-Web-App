@@ -114,19 +114,6 @@ def process_file(file_content):
         database = client[cosmos_db_database_name]
         collection = database[cosmos_db_container_name]
 
-        # Store chunks and their embeddings in Cosmos DB the MongoDB version
-        #for doc in docs:
-        #    input_bytes = doc.encode('utf-8')
-        #    embedding = get_embedding(doc)
-        #    collection.update_one(
-        #        {'id': hashlib.md5(input_bytes).hexdigest()},
-        #        {'$set': {
-        #            'content': doc,
-        #            'embedding': embedding
-        #        }},
-        #        upsert=True
-        #    )
-
         # Store chunks and their embeddings in Cosmos DB (MongoDB)
         for doc in docs:
             input_bytes = doc.encode('utf-8')
@@ -145,3 +132,52 @@ def process_file(file_content):
         
     #except Exception as e:
     #    logging.error(f"Error processing file: {e}")
+
+
+def clear_db():
+    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+    client = MongoClient(cosmos_db_connection_string)
+    database = client[cosmos_db_database_name]
+    collection = database[cosmos_db_container_name]
+
+    # Delete all documents in the collection
+    result = collection.delete_many({})
+    logging.info(f"Deleted {result.deleted_count} documents from the database.")
+
+
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+def query_db(user_question, top_k=5):
+    cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
+    cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
+    cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
+
+    client = MongoClient(cosmos_db_connection_string)
+    database = client[cosmos_db_database_name]
+    collection = database[cosmos_db_container_name]
+
+    # Get embedding for user question
+    question_embedding = get_embedding(user_question)
+
+    # Fetch all documents and their embeddings from the database
+    documents = list(collection.find({}, {'_id': 0, 'id': 1, 'content': 1, 'embedding': 1}))
+
+    # Calculate cosine similarity between user question embedding and document embeddings
+    similarities = []
+    for doc in documents:
+        doc_embedding = np.array(doc['embedding']).reshape(1, -1)
+        question_embedding_np = np.array(question_embedding).reshape(1, -1)
+        similarity = cosine_similarity(doc_embedding, question_embedding_np)[0][0]
+        similarities.append((doc, similarity))
+
+    # Sort documents by similarity score in descending order
+    similarities.sort(key=lambda x: x[1], reverse=True)
+
+    # Get top_k most similar documents
+    top_documents = [doc for doc, sim in similarities[:top_k]]
+
+    return top_documents
