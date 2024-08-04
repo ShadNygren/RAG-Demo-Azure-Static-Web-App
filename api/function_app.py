@@ -18,6 +18,7 @@ from azure.cosmos import CosmosClient, PartitionKey
 
 from pymongo import MongoClient
 
+import hashlib
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -99,10 +100,11 @@ def process_file(file_content):
         # Compute embeddings for each chunk
         #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
 
-        embeddings_list = []
-        for doc in docs:
-            embedding = get_embedding(doc)
-            embeddings_list.append(embedding)
+        # This code worked but I moved it and merged it into the upsert below
+        #embeddings_list = []
+        #for doc in docs:
+        #    embedding = get_embedding(doc)
+        #    embeddings_list.append(embedding)
 
 
         # ----- CosmosDB -----
@@ -142,9 +144,22 @@ def process_file(file_content):
         #    })
 
         # Store chunks and their embeddings in Cosmos DB the MongoDB version
-        for doc, embedding in zip(docs, embeddings_list):
+        #for doc, embedding in zip(docs, embeddings_list):
+        #    collection.update_one(
+        #        {'id': doc.metadata['id']},
+        #        {'$set': {
+        #            'content': doc.page_content,
+        #            'embedding': embedding
+        #        }},
+        #        upsert=True
+        #    )
+
+        # Store chunks and their embeddings in Cosmos DB the MongoDB version
+        for doc in docs:
+            input_bytes = doc.encode('utf-8')
+            embedding = get_embedding(doc)
             collection.update_one(
-                {'id': doc.metadata['id']},
+                {'id': hashlib.md5(input_bytes).hexdigest()},
                 {'$set': {
                     'content': doc.page_content,
                     'embedding': embedding
