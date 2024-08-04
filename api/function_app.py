@@ -92,21 +92,6 @@ def process_file(file_content):
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         docs = text_splitter.split_text(file_content)
 
-        # ----- embeddings -----
-
-        # Initialize OpenAI embeddings
-        #embeddings = OpenAIEmbeddings()
-
-        # Compute embeddings for each chunk
-        #embeddings_list = [embeddings.embed_text(doc.page_content) for doc in docs]
-
-        # This code worked but I moved it and merged it into the upsert below
-        #embeddings_list = []
-        #for doc in docs:
-        #    embedding = get_embedding(doc)
-        #    embeddings_list.append(embedding)
-
-
         # ----- CosmosDB -----
 
         cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
@@ -124,35 +109,10 @@ def process_file(file_content):
         if not cosmos_db_container_name:
             raise ValueError("COSMOS_DB_COLLECTION_NAME environment variable not found or is empty")
 
-        # Initialize Cosmos DB client
-        #credential = DefaultAzureCredential()
-        #client = CosmosClient(cosmos_db_connection_string, credential)
-        #database = client.get_database_client(cosmos_db_database_name)
-        #container = database.get_container_client(cosmos_db_container_name
-
-        # Initialize MongoDB client
+        # Initialize MongoDB client for CosmosDB
         client = MongoClient(cosmos_db_connection_string)
         database = client[cosmos_db_database_name]
         collection = database[cosmos_db_container_name]
-
-        # Store chunks and their embeddings in Cosmos DB
-        #for doc, embedding in zip(docs, embeddings_list):
-        #    container.upsert_item({
-        #        'id': doc.metadata['id'],
-        #        'content': doc.page_content,
-        #        'embedding': embedding
-        #    })
-
-        # Store chunks and their embeddings in Cosmos DB the MongoDB version
-        #for doc, embedding in zip(docs, embeddings_list):
-        #    collection.update_one(
-        #        {'id': doc.metadata['id']},
-        #        {'$set': {
-        #            'content': doc.page_content,
-        #            'embedding': embedding
-        #        }},
-        #        upsert=True
-        #    )
 
         # Store chunks and their embeddings in Cosmos DB the MongoDB version
         for doc in docs:
