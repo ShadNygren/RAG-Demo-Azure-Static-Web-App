@@ -13,5 +13,14 @@ langchain-openai
 langchain-community
 transformers
 
-numpy
-sklearn
+# I could not include these libraries because I got this error so I had to try something smaller and simpler
+#---End of Oryx build logs---
+#Function Runtime Information. OS: linux, Functions Runtime: ~4, python version: 3.8
+#Finished building function app with Oryx
+#Zipping Api Artifacts
+#Done Zipping Api Artifacts
+#The content server has rejected the request with: BadRequest
+#Reason: The size of the function content was too large. The limit for this Static Web App is 104857600 bytes.
+#
+#numpy
+#sklearn
