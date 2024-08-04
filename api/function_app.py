@@ -115,11 +115,25 @@ def process_file(file_content):
         collection = database[cosmos_db_container_name]
 
         # Store chunks and their embeddings in Cosmos DB the MongoDB version
+        #for doc in docs:
+        #    input_bytes = doc.encode('utf-8')
+        #    embedding = get_embedding(doc)
+        #    collection.update_one(
+        #        {'id': hashlib.md5(input_bytes).hexdigest()},
+        #        {'$set': {
+        #            'content': doc,
+        #            'embedding': embedding
+        #        }},
+        #        upsert=True
+        #    )
+
+        # Store chunks and their embeddings in Cosmos DB (MongoDB)
         for doc in docs:
             input_bytes = doc.encode('utf-8')
+            md5_hash = hashlib.md5(input_bytes).hexdigest()
             embedding = get_embedding(doc)
             collection.update_one(
-                {'id': hashlib.md5(input_bytes).hexdigest()},
+                {'_id': md5_hash},
                 {'$set': {
                     'content': doc,
                     'embedding': embedding
