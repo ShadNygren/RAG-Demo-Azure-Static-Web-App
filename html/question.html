@@ -9,6 +9,18 @@
     <h1>Ask a Question</h1>
     <p>Say Hello from API: <b id="name">...</b></p>
     <form id="questionForm">
+        <fieldset>
+            <legend>Query Options</legend>
+            <label>
+                <input type="radio" name="RAG_Only_Query_Option" value="RAG_Only_Query_Option" checked>
+                Answer question using only data in RAG (default)
+            </label>
+            <br>
+            <label>
+                <input type="radio" name="Full_Query_Option" value="RAG_Only_Query_Option">
+                Answer question using full knowledge in LLM plus RAG
+            </label>
+        </fieldset>
         <label for="question">Your Question:</label><br>
         <textarea id="question" name="question" rows="4" cols="50"></textarea><br><br>
         <button type="button" onclick="submitQuestion()">Submit</button>
