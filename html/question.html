@@ -22,11 +22,11 @@
             </label>
         </fieldset>
         <label for="visitor_question">Visitor Question:</label><br>
-        <textarea id="visitor_question" name="visitor_question" rows="4"></textarea><br><br>
+        <textarea id="visitor_question" name="visitor_question" rows="4" style="width: 100%;"></textarea><br><br>
         <button type="button" onclick="submitQuestion()">Submit</button>
     </form>
     <h2>Answer From LLM RAG:</h2>
-    <textarea id="answer" name="answer" rows="4" cols="80" readonly></textarea>
+    <textarea id="answer" name="answer" rows="10" style="width: 100%;" readonly></textarea>
 
     <script>
         (async function() {
