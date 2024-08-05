@@ -325,7 +325,7 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             #for result in results:
             #    the_answer += "\n\n" + result.content
             rag_answer = {
-                "answer": str(results[0].content)
+                "answer": str(results[0])
             }
             return func.HttpResponse(json.dumps(rag_answer, default=str), mimetype="application/json", status_code=200)
         else:
