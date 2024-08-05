@@ -321,11 +321,11 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
         if user_question:
             results = query_mongodb(user_question, top_k=5, minimum_similarity=0.5)
             logging.info('Query executed successfully.')
-            #the_answer = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
-            #for result in results:
-            #    the_answer += "\n\n" + result.content
+            the_answer = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
+            for result in results:
+                the_answer += "\n\n" + result["content"]
             rag_answer = {
-                "answer": str(results[0])
+                "answer": the_answer #str(results[0])
             }
             return func.HttpResponse(json.dumps(rag_answer, default=str), mimetype="application/json", status_code=200)
         else:
