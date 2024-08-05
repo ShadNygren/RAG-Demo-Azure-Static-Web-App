@@ -305,7 +305,7 @@ def cosine_similarity_manual(vec1, vec2):
     return dot_product / (norm_a * norm_b)
 
 
-def query_mongodb(user_question, top_k=5, minimum_similarity=0.0):
+def query_mongodb(user_question, top_k=3, minimum_similarity=0.0):
     cosmos_db_connection_string = os.getenv("COSMOS_DB_CONNECTION_STRING")
     cosmos_db_database_name = os.getenv("COSMOS_DB_DATABASE_NAME")
     cosmos_db_container_name = os.getenv("COSMOS_DB_COLLECTION_NAME")
@@ -348,7 +348,7 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             user_question = req_body.get('question')
 
         if user_question:
-            results = query_mongodb(user_question, top_k=5, minimum_similarity=0.8)
+            results = query_mongodb(user_question, top_k=3, minimum_similarity=0.8)
             logging.info('Query executed successfully.')
 
             #rag_content = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
@@ -356,12 +356,16 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             for result in results:
                 rag_content += "\n\n-----\n\n" + result["content"]
 
-            #llm_prompt = "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
-            llm_prompt = "Who is Mickey Mouse?"
+            llm_prompt = "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
+            #llm_prompt = "Who is Mickey Mouse?"
+
+            #llm_answer = ask_llm_question(llm_prompt)
+            llm_answer = llm_prompt
 
             final_answer = {
-                "answer": ask_llm_question(llm_prompt)
+                "answer": llm_answer
             }
+            
             return func.HttpResponse(json.dumps(final_answer, default=str), mimetype="application/json", status_code=200)
         else:
             return func.HttpResponse("Please provide a question to query.", status_code=400)
