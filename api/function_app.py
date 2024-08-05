@@ -266,24 +266,29 @@ def clear_db_route(req: func.HttpRequest) -> func.HttpResponse:
 import os
 import openai
 
-def get_openai_api_key():
-    return os.getenv("OPENAI_API_KEY")
+#def get_openai_api_key():
+#    return os.getenv("OPENAI_API_KEY")
 
-def ask_llm_question(prompt):
-    openai.api_key = get_openai_api_key()
+from openai import OpenAI
 
-    response = openai.Completion.create(
-        model="gpt-4",  # Use the specific model you want
-        prompt=prompt,
-        max_tokens=1500,  # Adjust this value as needed
-        temperature=0.7,  # Adjust this value as needed
-        n=1,
-        stop=None
+def ask_llm_question(user_prompt):
+    client = OpenAI()
+
+    system_prompt = """You are a helpful assistant that answers questions about Walt Disney and Disney characters and Disney movies and Disney theme parks and properties such as Disneyland, Disney California Adventure, Disneyworld, Epcot, Disney World Resort, Disney Hollywood Studios and Disneyland locations in Paris, Tokyo, Hong Kong Shanghai and rides and attractions and schedules at these locations.
+            You use the RAG Content to assist you in answering the User Question.
+            You politely decline to answer questions that are not related to Disney.
+            You politely decline to answer questions that are related to politics, religion, race, violence, sex, sexism, misogyny or any other controversial topic. 
+            """
+
+    completion = client.chat.completions.create(
+      model="gpt-4o",
+      messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+      ]
     )
 
-    # Extract the response text
-    answer = response.choices[0].text.strip()
-    return answer
+    return completion.choices[0].message.content.strip()
 
 # ----------------------------------
 
@@ -345,14 +350,14 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
         if user_question:
             results = query_mongodb(user_question, top_k=5, minimum_similarity=0.8)
             logging.info('Query executed successfully.')
-            #rag_answer = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
-            rag_answer = ""
+
+            #rag_content = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
+            rag_content = ""
             for result in results:
-                rag_answer += "\n\n-----\n\n" + result["content"]
-            llm_prompt = """You are a helpful assistant that answers questions about Walt Disney and Disney characters and Disney movies and Disney theme parks and properties such as Disneyland, Disney California Adventure, Disneyworld, Epcot and rides and attractions and schedules at these locations.
-            You politely decline to answer questions that are not related to Disney. You politely decline to answer questions that are related to politics, religion, race, violence, sex, sexism, misogyny or any other controversial topic. 
-            """
-            llm_prompt += "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_answer 
+                rag_content += "\n\n-----\n\n" + result["content"]
+
+            llm_prompt += "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
+
             final_answer = {
                 "answer": ask_llm_question(llm_prompt)
             }
