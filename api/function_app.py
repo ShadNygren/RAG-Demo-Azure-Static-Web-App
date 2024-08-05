@@ -354,18 +354,18 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             #rag_content = "This is a hard-coded response for debugging purposes. The type(results) = " + str(type(results)) + " and the len(results) = " + str(len(results)) + " here is the results list: " #+ str(results)
             rag_content = ""
             for result in results:
-                rag_content += "\n\n-----\n\n" + result["content"]
+                rag_content += result["content"] + "\n\n" 
 
             llm_prompt = "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
             #llm_prompt = "Who is Mickey Mouse?"
 
-            #llm_answer = ask_llm_question(llm_prompt)
-            llm_answer = llm_prompt
+            llm_answer = ask_llm_question(llm_prompt)
+            #llm_answer = llm_prompt
 
             final_answer = {
                 "answer": llm_answer
             }
-            
+
             return func.HttpResponse(json.dumps(final_answer, default=str), mimetype="application/json", status_code=200)
         else:
             return func.HttpResponse("Please provide a question to query.", status_code=400)
