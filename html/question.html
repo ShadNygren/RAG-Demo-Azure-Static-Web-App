@@ -12,33 +12,19 @@
         <fieldset>
             <legend>Query Knowledge Source Options</legend>
             <label>
-                <input type="radio" name="RAG_Only_Query_Option" value="RAG_Only_Query_Option" checked>
-                Answer question using only data in RAG (default)
+                <input type="radio" name="Full_Query_Option" value="RAG_Only_Query_Option" checked>
+                Answer question using full knowledge in LLM plus RAG (default)
             </label>
             <br>
             <label>
-                <input type="radio" name="Full_Query_Option" value="RAG_Only_Query_Option">
-                Answer question using full knowledge in LLM plus RAG
-            </label>
-        </fieldset>
-        <fieldset>
-            <legend>Query Filter Options</legend>
-            <label>
-                <input type="radio" name="Filter_Objectionable_Content_Option" value="Filter_Objectionable_Content_Option" checked>
-                Filter visitor questions for objectionable content (default)
-            </label>
-            <br>
-            <label>
-                <input type="radio" name="No_Filter_Option" value="No_Filter_Option">
-                Do not filter visitor questions for objectionable content
+                <input type="radio" name="RAG_Only_Query_Option" value="RAG_Only_Query_Option">
+                Answer question using only data in RAG
             </label>
         </fieldset>
         <label for="visitor_question">Visitor Question:</label><br>
-        <textarea id="visitor_question" name="visitor_question" rows="4" cols="80"></textarea><br><br>
+        <textarea id="visitor_question" name="visitor_question" rows="4"></textarea><br><br>
         <button type="button" onclick="submitQuestion()">Submit</button>
     </form>
-    <h2>Modified Question Sent to LLM RAG</h2>
-    <textarea id="modified_question" name="modified_question" rows="4" cols="80" readonly></textarea>
     <h2>Answer From LLM RAG:</h2>
     <textarea id="answer" name="answer" rows="4" cols="80" readonly></textarea>
 
