@@ -13,4 +13,4 @@ Once uploaded these files are then split into chunks using the RecursiveCharacte
 
 The question.html page provides a basic Question and Answer capability using the information stored in the RAG database and the OpenAI gpt-4o LLM model.
 
-This demo includes prompt to prevent answering questions about objectionable content and content otherwise not related to Disney.
+This demo includes prompt engineering and LLM alignment designed to prevent answering questions about objectionable content and content otherwise not related to Disney.
