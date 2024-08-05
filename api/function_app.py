@@ -356,7 +356,8 @@ def query_db_route(req: func.HttpRequest) -> func.HttpResponse:
             for result in results:
                 rag_content += "\n\n-----\n\n" + result["content"]
 
-            llm_prompt += "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
+            #llm_prompt = "\n\n### User Question:\n" + user_question + "\n\n### RAG Content:\n\n" + rag_content
+            llm_prompt = "Who is Mickey Mouse?"
 
             final_answer = {
                 "answer": ask_llm_question(llm_prompt)
