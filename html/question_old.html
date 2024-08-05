@@ -17,7 +17,7 @@
             </label>
             <br>
             <label>
-                <input type="radio" name="queryOption" value="\n\nAnswer the User Question by using only the RAG Content provided below. DO NOT USE ANY OTHER KNOWLEDGE FROM YOUR TRAINING WHEN ANSWERING THE User Question.">
+                <input type="radio" name="queryOption" value="\n\nAnswer the User Question by using only the RAG Content provided below. DO NOT USE ANY OTHER KNOWLEDGE FROM YOUR TRAINING WHEN ANSWERING THE User Question.\n\n">
                 Answer question using only data in RAG
             </label>
         </fieldset>
@@ -37,21 +37,13 @@
 
     <script>
         async function submitQuestion() {
-            const questionElement = document.getElementById('visitor_question');
-            const question = questionElement.value;
-
-            // Get the selected radio button value
-            const selectedOption = document.querySelector('input[name="queryOption"]:checked').value;
-
-            // Append the selected option value to the question
-            const fullQuestion = question + selectedOption;
-
+            const question = document.getElementById('visitor_question').value;
             const response = await fetch('/api/query_db', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ question: fullQuestion })
+                body: JSON.stringify({ question })
             });
 
             const data = await response.json();
